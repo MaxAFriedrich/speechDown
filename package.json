@@ -1,0 +1,27 @@
+{
+  "name": "tbd",
+  "version": "0.0.1",
+  "description": "tbd",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": "",
+  "keywords": [
+    "Electron",
+    "quick",
+    "start",
+    "tutorial",
+    "demo"
+  ],
+  "author": "Max Friedrich",
+  "license": "MIT",
+  "devDependencies": {
+    "devtron": "^1.4.0",
+    "electron": "^16.0.6"
+  },
+  "dependencies": {
+    "mic": "^2.1.2",
+    "vosk": "^0.3.32"
+  }
+}
