@@ -1,13 +1,32 @@
-// All of the Node.js APIs are available in the preload process.
-// It has the same sandbox as a Chrome extension.
-window.addEventListener('DOMContentLoaded', () => {
-  const replaceText = (selector, text) => {
-    const element = document.getElementById(selector)
-    if (element) element.innerText = text
-  }
+const {
+  contextBridge,
+  ipcRenderer
+} = require("electron");
 
-  for (const type of ['chrome', 'node', 'electron']) {
-    replaceText(`${type}-version`, process.versions[type])
-  }
-})
 
+// window.api.receive("fromMain", (data) => {
+//   console.log(`Received ${data} from main process`);
+// });
+// window.api.send("toMain", "some data");
+
+
+// Expose protected methods that allow the renderer process to use
+// the ipcRenderer without exposing the entire object
+contextBridge.exposeInMainWorld(
+  "api", {
+      send: (channel, data) => {
+          // whitelist channels
+          let validChannels = ["save-file","open-file"];
+          if (validChannels.includes(channel)) {
+              ipcRenderer.send(channel, data);
+          }
+      },
+      receive: (channel, func) => {
+          let validChannels = ["new-file"];
+          if (validChannels.includes(channel)) {
+              // Deliberately strip event as it includes `sender` 
+              ipcRenderer.on(channel, (event, ...args) => func(...args));
+          }
+      }
+  }
+);
