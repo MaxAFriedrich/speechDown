@@ -71,6 +71,9 @@ function createWindow() {
       mainWindow.webContents.send("new-file", fs.readFileSync(savePath, "utf-8"));
     }
   });
+  ipcMain.on("create-file", (event, arg)=>{
+    savePath="";
+  })
 
   // and load the index.html of the app.
   mainWindow.loadFile('render/index.html');

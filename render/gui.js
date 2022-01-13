@@ -1,7 +1,7 @@
 window.onload = function () {
 
     $("#codeInput").on("keyup", function () {
-        mdParser()
+        mdParser();
     });
 
     $("#Save").on("click", function () {
@@ -109,21 +109,25 @@ window.onload = function () {
             window.api.send("save-file", $("#codeInput").val());
         }
         if (event.ctrlKey && event.key == "o") {
-            window.api.send("open-file", "");
-
             // window.api.send("save-file", $("#codeInput").val());
+            window.api.send("open-file", "");
+        }
+        if (event.ctrlKey && event.key == "n") {
+            window.api.send("create-file", "");
+            $("#codeInput").val("");
+            mdParser();
         }
     });
 
     window.api.receive("new-file", (data) => {
         $("#codeInput").val(data);
-        mdParser()
+        mdParser();
     });
 };
 
-function mdParser(){
-     // console.log($("#codeInput").val());
-     let parsedHTML = DOMPurify.sanitize(marked.parse($("#codeInput").val()));
-     $("#outputText").html(parsedHTML);
-     $("input[type='checkbox']").parents("ul").css({ "list-style-type": "none" });
+function mdParser() {
+    // console.log($("#codeInput").val());
+    let parsedHTML = DOMPurify.sanitize(marked.parse($("#codeInput").val()));
+    $("#outputText").html(parsedHTML);
+    $("input[type='checkbox']").parents("ul").css({ "list-style-type": "none" });
 }
