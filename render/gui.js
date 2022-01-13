@@ -11,6 +11,11 @@ window.onload = function () {
     $("#Open").on("click", function () {
         window.api.send("open-file", "");
     });
+    $("#New").on("click", function () {
+        window.api.send("create-file", "");
+        $("#codeInput").val("");
+        mdParser();
+    });
     $("#Dictate").on("click", function () { alert("Dictate"); });
     $("#OCR").on("click", function () { alert("OCR"); });
     $("#Read").on("click", function () { alert("Read"); });
