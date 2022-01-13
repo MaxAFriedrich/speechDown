@@ -1,4 +1,5 @@
 window.onload = function () {
+    $("#codeInput").focus();
 
     $("#codeInput").on("keyup", function () {
         mdParser();
@@ -16,7 +17,11 @@ window.onload = function () {
         $("#codeInput").val("");
         mdParser();
     });
-    $("#Dictate").on("click", function () { alert("Dictate"); });
+    $("#Dictate").on("click", function () {
+        window.api.send("toggle-dictate", "");
+        $("#dictationOn").toggle();
+        $("#dictationOff").toggle();
+    });
     $("#OCR").on("click", function () { alert("OCR"); });
     $("#Read").on("click", function () { alert("Read"); });
     $("#Code").on("click", function () {
@@ -122,11 +127,24 @@ window.onload = function () {
             $("#codeInput").val("");
             mdParser();
         }
+        if (event.ctrlKey && event.key == "d") {
+            window.api.send("toggle-dictate", "");
+            $("#dictationOn").toggle();
+            $("#dictationOff").toggle();
+        }
     });
 
     window.api.receive("new-file", (data) => {
         $("#codeInput").val(data);
         mdParser();
+    });
+    window.api.receive("text-dictate", (data) => {
+        if (data.text != "" && data.text != "the") {
+            // console.log(data);
+            $("#codeInput").focus();
+            insertText(data.text);
+            mdParser();
+        }
     });
 };
 
@@ -135,4 +153,139 @@ function mdParser() {
     let parsedHTML = DOMPurify.sanitize(marked.parse($("#codeInput").val()));
     $("#outputText").html(parsedHTML);
     $("input[type='checkbox']").parents("ul").css({ "list-style-type": "none" });
+}
+
+
+function isLetter(str) {
+    return str.length === 1 && str.match(/[a-z]/i);
+}
+
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
+/*
+
+TODO
+
+? - [x] End sentence punctuation - **in text**
+? - [x] End sentence punctuation - **with old text**
+? - [x] mid sentence punctuation
+? - [ ] new lines and new paragraphs
+? - [x] speech marks and brackets
+? - [x] "I" and "I'm" by itself
+
+*/
+
+function insertText(text) {
+    var input = document.getElementById("codeInput");
+
+    if (input == undefined) { return; }
+    var scrollPos = input.scrollTop;
+    var pos = 0;
+    var browser = ((input.selectionStart || input.selectionStart == "0") ?
+        "ff" : (document.selection ? "ie" : false));
+    if (browser == "ie") {
+        input.focus();
+        var range = document.selection.createRange();
+        range.moveStart("character", -input.value.length);
+        pos = range.text.length;
+    }
+    else if (browser == "ff") { pos = input.selectionStart; };
+
+    var front = (input.value).substring(0, pos);
+    var back = (input.value).substring(pos, input.value.length);
+
+    const allCharacters = [
+        [" I ", [" i "]],
+        ["i'm", ["I'm"]],
+        [".", [" full stop", " period", "dot"]],
+        ["!", [" exclamation mark"]],
+        ['"', ["speech mark", "quotation mark"]],
+        ["£", ["great british pounds ", "british pounds ", "pounds ", "pound sign ", "pound symbol "]],
+        ["$", ["dollars ", "dollar sign ", "dollar "]],
+        ["%", ["percent ", "percent symbol "]],
+        ["^", ["carrot symbol", "carrot sign"]],
+        ["&", ["ampersand"]],
+        ["*", ["star symbol", "star sign","asterisk","italics"]],
+        ["**", ["bold"]],
+        ["(", ["open bracket ", "open brackets ", "start brackets ", "start bracket "]],
+        [")", [" close bracket", " close brackets", " end brackets", " end bracket"]],
+        ["- ", ["dash symbol ", "dash sign "]],
+        ["_", [" underscore ", " underscore symbol ", " underscore sign "]],
+        ["+", ["plus sign", "plus symbol", "add symbol", "add sign"]],
+        ["=", ["equals", "equals symbol", "equals sign"]],
+        ["`", ["grave accent", "grave symbol", "grave sign"]],
+        ["¬", ["logical not symbol", "logical not sign"]],
+        ["{", [" open curly brace", " open curly bracket", " open brace", " start curly brace", " start curly bracket", " start brace"]],
+        ["}", ["close curly brace ", "close curly bracket ", "close brace ", "end curly brace ", "end curly bracket ", "end brace "]],
+        ["[", [" open square bracket", " start square bracket"]],
+        ["]", ["close square bracket ", "end square bracket "]],
+        [":", [" colon"]],
+        [";", [" semi colon"]],
+        ["@", [" at symbol "]],
+        ["'", ["single quote", "apostrophe"]],
+        ["~", ["tilde", "tilde symbol", "tilde sign"]],
+        ["#", ["hashtag", "hash tag", "hash symbol", "hash sign"]],
+        ["##",["heading two"]],
+        ["###",["heading three"]],
+        ["####",["heading four"]],
+        ["#####",["heading five"]],
+        ["######",["heading six"]],
+        ["|", ["bar symbol", "bar sign"]],
+        ["\\", [" back slash "]],
+        ["<", ["less than symbol", "less than sign"]],
+        ["<", ["greater than symbol", "greater than sign"]],
+        [",", [" half stop", " comma"]],
+        ["/", [" slash ", " forward slash "]],
+        ["?", [" question mark"]],
+    ];
+    text = " " + text + " ";
+    for (let i = 0; i < allCharacters.length; i++) {
+        for (let j = 0; j < allCharacters[i][1].length; j++) {
+            text = text.replace(new RegExp(allCharacters[i][1][j], "g"), allCharacters[i][0]);
+        }
+    }
+    text = text.trim();
+    text = text.replace(/(\!|\-|\.|\?|\*|#)( |)(\S)/g, s => s.toUpperCase());
+    let lastCharacter = front.trim();
+    lastCharacter = front.charAt(lastCharacter.length - 1);
+    const endSentencePunctuation = ["!", "-", ".", "?", "*", " \n"];
+    let lastCharacterBool = false;
+    endSentencePunctuation.forEach((e) => {
+        if (e == lastCharacter)
+            lastCharacterBool = true;
+    });
+
+    if (isLetter(front.charAt(front.length - 1))) {
+        text = " " + text;
+    } else if (front == "" || lastCharacterBool) {
+        text = capitalizeFirstLetter(text);
+    }
+    if (lastCharacterBool) {
+        text = " " + text;
+    }
+
+
+    input.value = front + text + back;
+    pos = pos + text.length;
+    if (browser == "ie") {
+        input.focus();
+        var range = document.selection.createRange();
+        range.moveStart("character", -input.value.length);
+        range.moveStart("character", pos);
+        range.moveEnd("character", 0);
+        range.select();
+    }
+    else if (browser == "ff") {
+        input.selectionStart = pos;
+        input.selectionEnd = pos;
+        input.focus();
+    }
+    input.scrollTop = scrollPos;
+
+    console.log(back);
+    console.log(text);
+    console.log(front);
+
 }

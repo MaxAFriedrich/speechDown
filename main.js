@@ -2,9 +2,12 @@
 const { app, BrowserWindow, Menu, MenuItem, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
+const vosk = require('vosk');
+const mic = require("mic");
 
 let savePath = "";
-
+let model;
+let rec;
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -71,15 +74,75 @@ function createWindow() {
       mainWindow.webContents.send("new-file", fs.readFileSync(savePath, "utf-8"));
     }
   });
-  ipcMain.on("create-file", (event, arg)=>{
-    savePath="";
-  })
+  ipcMain.on("create-file", (event, arg) => {
+    savePath = "";
+  });
+  let dictationStatus = false;
+  ipcMain.on("toggle-dictate", (event, arg) => {
+    if (dictationStatus) {
+      stopMic();
+    } else {
+      startMic();
+    }
+    dictationStatus = !dictationStatus;
+  });
+
+
+
+
+  // const menu = new Menu();
+  // Menu.setApplicationMenu(menu);;
+
+
+  MODEL_PATH = "model";
+  SAMPLE_RATE = 16000;
+
+  if (!fs.existsSync(MODEL_PATH)) {
+    console.log("Please download the model from https://alphacephei.com/vosk/models and unpack as " + MODEL_PATH + " in the current folder.");
+    process.exit();
+  }
+
+  vosk.setLogLevel(0);
+  model = new vosk.Model(MODEL_PATH);
+  rec = new vosk.Recognizer({ model: model, sampleRate: SAMPLE_RATE });
+
+  var micInstance = mic({
+    rate: String(SAMPLE_RATE),
+    channels: '1',
+    debug: false,
+  });
+
+  var micInputStream = micInstance.getAudioStream();
+
+  micInstance.start();
+
+  micInputStream.on('data', data => {
+    if (rec.acceptWaveform(data))
+      // if (rec.result().text != "" || rec.result().text != "the")
+        // console.log(rec.result().text);
+        mainWindow.webContents.send("text-dictate", rec.result());
+
+    // else
+    //   console.log(rec.partialResult());
+  });
+  micInstance.pause();
+
+  function startMic() {
+    micInstance.resume();
+  }
+
+  function stopMic() {
+    micInstance.pause();
+  }
+
+
+
 
   // and load the index.html of the app.
   mainWindow.loadFile('render/index.html');
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 }
 
 // This method will be called when Electron has finished
@@ -92,6 +155,8 @@ app.whenReady().then(() => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
+    rec.free();
+    model.free();
   });
 });
 
@@ -102,52 +167,9 @@ app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit();
 });
 
-
-const menu = new Menu();
-// menu.append(new MenuItem({
-//   label: 'File',
-//   submenu: [{
-//     role: 'Save',
-//     label: "Save",
-//     accelerator: process.platform === 'darwin' ? 'Cmd+S' : 'Ctrl+S',
-//     click: () => { console.log('Save');}
-//   },
-//   {
-//     role: 'Open',
-//     label: "Open",
-//     accelerator: process.platform === 'darwin' ? 'Cmd+O' : 'Ctrl+O',
-//     click: () => { console.log('Open'); }
-//   }]
-// }));
-// menu.append(new MenuItem({
-//   label: 'Voice',
-//   submenu: [{
-//     role: 'Dictate',
-//     label: "Dictate",
-//     accelerator: process.platform === 'darwin' ? 'Cmd+D' : 'Ctrl+D',
-//     click: () => { console.log('Dictate'); }
-//   },
-//   {
-//     role: 'Scan Image',
-//     label: "Scan Image",
-//     accelerator: process.platform === 'darwin' ? 'Cmd+I' : 'Ctrl+I',
-//     click: () => { console.log('Scan Image'); }
-//   },
-//   {
-//     role: 'Read',
-//     label: "Read",
-//     accelerator: process.platform === 'darwin' ? 'Cmd+R' : 'Ctrl+R',
-//     click: () => { console.log('Read'); }
-//   }]
-// }));
-
-Menu.setApplicationMenu(menu);;
-
-// In this file you can include the rest of your app's specific main process
-// code. You can also put them in separate files and require them here.
-
-
-// const StT = require("./stt")
-
-// StT.startMic()
-// StT.stopMic()
+process.on('SIGINT', function () {
+  // console.log(rec.finalResult());
+  // console.log("\nDone");
+  rec.free();
+  model.free();
+});
