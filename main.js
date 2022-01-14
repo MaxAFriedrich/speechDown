@@ -4,10 +4,24 @@ const path = require('path');
 const fs = require('fs');
 const vosk = require('vosk');
 const mic = require("mic");
+const textToSpeech = require('@google-cloud/text-to-speech');
+const client = new textToSpeech.TextToSpeechClient();
+
 
 let savePath = "";
 let model;
 let rec;
+
+function _arrayBufferToBase64(buffer) {
+  var binary = '';
+  var bytes = new Uint8Array(buffer);
+  var len = bytes.byteLength;
+  for (var i = 0; i < len; i++) {
+    binary += String.fromCharCode(bytes[i]);
+  }
+  return btoa(binary);
+}
+
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -74,6 +88,26 @@ function createWindow() {
       mainWindow.webContents.send("new-file", fs.readFileSync(savePath, "utf-8"));
     }
   });
+
+  ipcMain.on('start-speak', async (event, arg) => {
+    // The text to synthesize
+    // const text = 'hello, world!';
+
+    // Construct the request
+    const request = {
+      input: { text: arg },
+      // Select the language and SSML voice gender (optional)
+      voice: { languageCode: 'en-GB', ssmlGender: 'MALE', name: "en-GB-Wavenet-B", speakingRate: 0.6 },
+      // select the type of audio encoding
+      audioConfig: { audioEncoding: 'MP3' },
+    };
+
+    // Performs the text-to-speech request
+    const [response] = await client.synthesizeSpeech(request);
+    const out = "data:audio/mpeg;base64," + _arrayBufferToBase64(response.audioContent);
+    mainWindow.webContents.send("audio-speak", out);
+  });
+
   ipcMain.on("create-file", (event, arg) => {
     savePath = "";
   });
@@ -90,8 +124,8 @@ function createWindow() {
 
 
 
-  // const menu = new Menu();
-  // Menu.setApplicationMenu(menu);;
+  const menu = new Menu();
+  Menu.setApplicationMenu(menu);;
 
 
   MODEL_PATH = "model";
@@ -119,8 +153,8 @@ function createWindow() {
   micInputStream.on('data', data => {
     if (rec.acceptWaveform(data))
       // if (rec.result().text != "" || rec.result().text != "the")
-        // console.log(rec.result().text);
-        mainWindow.webContents.send("text-dictate", rec.result());
+      // console.log(rec.result().text);
+      mainWindow.webContents.send("text-dictate", rec.result());
 
     // else
     //   console.log(rec.partialResult());

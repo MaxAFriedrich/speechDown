@@ -76,6 +76,9 @@ body {
     display: flex;
 }
 
+#speakingAudio{
+    display: none;
+}
 
 .codeBoxes {
     outline: none;

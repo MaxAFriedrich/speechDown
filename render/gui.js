@@ -23,7 +23,23 @@ window.onload = function () {
         $("#dictationOff").toggle();
     });
     $("#OCR").on("click", function () { alert("OCR"); });
-    $("#Read").on("click", function () { alert("Read"); });
+    $("#Read").on("click", function () {
+        var textComponent = document.getElementById('codeInput');
+        var selectedText;
+
+        if (textComponent.selectionStart !== undefined) {// Standards Compliant Version
+            var startPos = textComponent.selectionStart;
+            var endPos = textComponent.selectionEnd;
+            selectedText = textComponent.value.substring(startPos, endPos);
+        }
+        else if (document.selection !== undefined) {// IE Version
+            textComponent.focus();
+            var sel = document.selection.createRange();
+            selectedText = sel.text;
+        }
+        window.api.send("start-speak", selectedText);
+
+    });
     $("#Code").on("click", function () {
         $("#codeInput").show();
         $("#codeInput").focus();
@@ -132,6 +148,24 @@ window.onload = function () {
             $("#dictationOn").toggle();
             $("#dictationOff").toggle();
         }
+        if (event.ctrlKey && event.key == "r") {
+            var textComponent = document.getElementById('codeInput');
+            var selectedText;
+
+            if (textComponent.selectionStart !== undefined) {// Standards Compliant Version
+                var startPos = textComponent.selectionStart;
+                var endPos = textComponent.selectionEnd;
+                selectedText = textComponent.value.substring(startPos, endPos);
+            }
+            else if (document.selection !== undefined) {// IE Version
+                textComponent.focus();
+                var sel = document.selection.createRange();
+                selectedText = sel.text;
+            }
+            window.api.send("start-speak", selectedText);
+            // $("#speakOn").toggle();
+            // $("#speakOff").toggle();
+        }
     });
 
     window.api.receive("new-file", (data) => {
@@ -146,6 +180,16 @@ window.onload = function () {
             mdParser();
         }
     });
+    window.api.receive("audio-speak", (data) => {
+        var audio = document.getElementById("speakingAudio");
+        audio.src = data;
+        audio.controls = true;
+        document.body.appendChild(audio);
+        audio.play()
+        // $("#speakOn").toggle();
+        // $("#speakOff").toggle();
+    });
+
 };
 
 function mdParser() {
@@ -207,7 +251,7 @@ function insertText(text) {
         ["%", ["percent ", "percent symbol "]],
         ["^", ["carrot symbol", "carrot sign"]],
         ["&", ["ampersand"]],
-        ["*", ["star symbol", "star sign","asterisk","italics"]],
+        ["*", ["star symbol", "star sign", "asterisk", "italics"]],
         ["**", ["bold"]],
         ["(", ["open bracket ", "open brackets ", "start brackets ", "start bracket "]],
         [")", [" close bracket", " close brackets", " end brackets", " end bracket"]],
@@ -227,11 +271,11 @@ function insertText(text) {
         ["'", ["single quote", "apostrophe"]],
         ["~", ["tilde", "tilde symbol", "tilde sign"]],
         ["#", ["hashtag", "hash tag", "hash symbol", "hash sign"]],
-        ["##",["heading two"]],
-        ["###",["heading three"]],
-        ["####",["heading four"]],
-        ["#####",["heading five"]],
-        ["######",["heading six"]],
+        ["##", ["heading two"]],
+        ["###", ["heading three"]],
+        ["####", ["heading four"]],
+        ["#####", ["heading five"]],
+        ["######", ["heading six"]],
         ["|", ["bar symbol", "bar sign"]],
         ["\\", [" back slash "]],
         ["<", ["less than symbol", "less than sign"]],

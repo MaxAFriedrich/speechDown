@@ -22,8 +22,14 @@
                 <img src="svg/keyboard_voice_white_24dp.svg" style="display:block;" id="dictationOff">
                 <img src="svg/stop_white_24dp.svg" style="display:none;" id="dictationOn">
             </button>
-            <button title="Convert image to text." id="OCR"><img src="svg/document_scanner_white_24dp.svg"></button>
-            <button title="Read out the text." id="Read"><img src="svg/volume_up_white_24dp.svg"></button>
+            <button title="Convert image to text." id="OCR">
+                <img src="svg/document_scanner_white_24dp.svg">
+            </button>
+            <button title="Read out the text." id="Read">
+                
+                <img src="svg/volume_up_white_24dp.svg" style="display:block;" id="speakOff">
+                <img src="svg/stop_white_24dp.svg" style="display:none;" id="speakOn">
+            </button>
 
         </div>
         <div class="right">
@@ -38,6 +44,7 @@
         <div class="codeBoxes syncscroll" id="outputText" name="editorFields"></div>
     </div>
     <script src="scripts/syncscroll.min.js"></script>
+    <audio src="" id="speakingAudio"></audio>
 </body>
 
 </html>
