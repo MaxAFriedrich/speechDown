@@ -153,3 +153,7 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
     background: var(--nord8);
 }
+
+button{
+    color: var(--nord4);
+}

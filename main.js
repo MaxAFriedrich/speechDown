@@ -5,7 +5,6 @@ const fs = require('fs');
 const vosk = require('vosk');
 const mic = require("mic");
 const textToSpeech = require('@google-cloud/text-to-speech');
-const client = new textToSpeech.TextToSpeechClient();
 const Store = require('electron-store');
 const openExternal = require('open-external');
 
@@ -20,6 +19,9 @@ const schema = {
     maximum: 4,
     minimum: 0.25,
     default: 1
+  },
+  googleAuthLocation: {
+    type: 'string'
   }
 };
 
@@ -106,6 +108,17 @@ function createWindow() {
       mainWindow.webContents.send("new-file", fs.readFileSync(savePath, "utf-8"));
     }
   });
+  ipcMain.on('auth-location', (event, arg) => {
+    // console.log(arg)
+    let loc = dialog.showOpenDialogSync(null, {
+      filters: [
+        { name: 'JSON', extensions: ['json'] }]
+    });
+    if (loc != undefined) {
+      store.set("googleAuthLocation", loc[0]);
+    }
+    // console.log(store.get("googleAuthLocation"));
+  });
 
   ipcMain.on('set-theme', (event, arg) => {
     store.set("theme", arg);
@@ -125,22 +138,37 @@ function createWindow() {
   });
 
   ipcMain.on('start-speak', async (event, arg) => {
-    // The text to synthesize
-    // const text = 'hello, world!';
+    if (store.get("googleAuthLocation") == undefined)
+      dialog.showErrorBox("Google Speech Error", "Make sure that you have set up your credentials in the settings.");
+    try {
+      let authFile = store.get("googleAuthLocation");
+      let projID = JSON.parse(fs.readFileSync(authFile)).project_id;
+      let client = new textToSpeech.TextToSpeechClient({ projID, authFile });
+      // console.log(store.get("googleAuthLocation"), authFile, projID);
 
-    // Construct the request
-    const request = {
-      input: { text: arg },
-      // Select the language and SSML voice gender (optional)
-      voice: { languageCode: 'en-GB', ssmlGender: 'MALE', name: "en-GB-Wavenet-B" },
-      // select the type of audio encoding
-      audioConfig: { audioEncoding: 'MP3', speakingRate: store.get("speechSpeed") },
-    };
+      // The text to synthesize
+      // const text = 'hello, world!';
 
-    // Performs the text-to-speech request
-    const [response] = await client.synthesizeSpeech(request);
-    const out = "data:audio/mpeg;base64," + _arrayBufferToBase64(response.audioContent);
-    mainWindow.webContents.send("audio-speak", out);
+      // Construct the request
+      const request = {
+        input: { text: arg },
+        // Select the language and SSML voice gender (optional)
+        voice: { languageCode: 'en-GB', ssmlGender: 'MALE', name: "en-GB-Wavenet-B" },
+        // select the type of audio encoding
+        audioConfig: { audioEncoding: 'MP3', speakingRate: store.get("speechSpeed") },
+      };
+
+      // Performs the text-to-speech request
+      const [response] = await client.synthesizeSpeech(request).catch((error) => {
+        dialog.showErrorBox("Google Speech Error", error);
+
+      });
+      const out = "data:audio/mpeg;base64," + _arrayBufferToBase64(response.audioContent);
+      mainWindow.webContents.send("audio-speak", out);
+    } catch (error) {
+      dialog.showErrorBox("Google Speech Error", error);
+    }
+
   });
 
   ipcMain.on("create-file", (event, arg) => {
@@ -167,7 +195,7 @@ function createWindow() {
   SAMPLE_RATE = 16000;
 
   if (!fs.existsSync(MODEL_PATH)) {
-    console.log("Please download the model from https://alphacephei.com/vosk/models and unpack as " + MODEL_PATH + " in the current folder.");
+    dialog.showErrorBox("Vosk Speech To Text Error", "Please download the model from https://alphacephei.com/vosk/models and unpack as " + MODEL_PATH + " in the installation folder.");
     process.exit();
   }
 

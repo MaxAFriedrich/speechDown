@@ -40,6 +40,9 @@ window.onload = function () {
         window.api.send("set-speechSpeed", Number($("#speechSpeed").val()));
         $("#speechSpeedDisplay").text($("#speechSpeed").val());
     });
+    $("#openAuthFile").on("click", () => {
+        window.api.send("auth-location", "");
+    });
 
     $("#Dictate").on("click", function () {
         window.api.send("toggle-dictate", "");

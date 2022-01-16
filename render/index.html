@@ -61,6 +61,14 @@
         <span>Speed</span>
         <input type="range" min="0.25" max="4" value="1.0" step="0.01" id="speechSpeed">
         <span id="speechSpeedDisplay"></span>
+        <br>
+        <h4>Authenticate</h4>
+        <p>
+            To use this app's text to speech capability, you need to set up authentication so this app can use <a onclick="window.api.send('open-link','cloud.google.com/text-to-speech')">Google Text-to-Speech</a>. You can find instructiosn on how to do this <a onclick="window.api.send('open-link','cloud.google.com/text-to-speech/docs/before-you-begin#setting_up_your_google_cloud_platform_project')">here.</a> <b>NOTE: Do not "Set your authentication environment variable".</b>
+            <br>
+            Once you have completed this, tell this app where you have stored the json file you downloaded is.
+        </p>
+        <button id="openAuthFile"><img src="svg/file_open_white_24dp.svg"> Open JSON file</button>
     </div>
 </body>
 

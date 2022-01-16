@@ -108,6 +108,7 @@ code {
     background-color: var(--nord0);
     color: var(--nord4);
 }
+
 pre code {
     background-color: var(--nord0);
     color: var(--nord4);
@@ -144,8 +145,9 @@ section {
     color: var(--nord8);
 }
 
-button{
-    filter:  brightness(20%);
+button {
+    filter: brightness(20%);
+    color: var(--nord0);
 }
 
 input[type="range"] {
