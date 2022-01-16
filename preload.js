@@ -16,13 +16,13 @@ contextBridge.exposeInMainWorld(
   "api", {
   send: (channel, data) => {
     // whitelist channels
-    let validChannels = ["save-file", "open-file", "create-file", "toggle-dictate","start-speak"];
+    let validChannels = ["save-file", "open-file", "create-file", "toggle-dictate", "start-speak", "set-theme", "get-theme","get-speechSpeed","set-speechSpeed"];
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data);
     }
   },
   receive: (channel, func) => {
-    let validChannels = ["new-file","text-dictate","audio-speak"];
+    let validChannels = ["new-file", "text-dictate", "audio-speak", "current-theme","current-speechSpeed"];
     if (validChannels.includes(channel)) {
       // Deliberately strip event as it includes `sender` 
       ipcRenderer.on(channel, (event, ...args) => func(...args));

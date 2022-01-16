@@ -1,11 +1,6 @@
 const playPaused = false;
 window.onload = function () {
     $("#codeInput").focus();
-    $("#darkMode").hide();
-    $("#themeCSS").attr("href", "dark.css");
-    $("#speechSpeedDisplay").text($("#speechSpeed").val())
-
-
     $("#codeInput").on("keyup", function () {
         mdParser();
     });
@@ -24,25 +19,27 @@ window.onload = function () {
     });
 
     $("#settingsBtn").on("click", () => {
+
         $("#settingsModal").slideDown("medium");
         $(".modal-block").fadeIn("medium");
     });
-    // TODO add settings save
     $("#darkMode").on("click", () => {
         $("#themeCSS").attr("href", "dark.css");
         $("#lightMode").toggle();
         $("#darkMode").toggle();
-
+        window.api.send("set-theme", "dark");
     });
     $("#lightMode").on("click", () => {
         $("#themeCSS").attr("href", "light.css");
         $("#lightMode").toggle();
         $("#darkMode").toggle();
+        window.api.send("set-theme", "light");
     });
 
-    $("#speechSpeed").on("change",()=>{
-        $("#speechSpeedDisplay").text($("#speechSpeed").val())
-    })
+    $("#speechSpeed").on("change", () => {
+        window.api.send("set-speechSpeed",Number($("#speechSpeed").val()))
+        $("#speechSpeedDisplay").text($("#speechSpeed").val());
+    });
 
     $("#Dictate").on("click", function () {
         window.api.send("toggle-dictate", "");
@@ -189,6 +186,22 @@ window.onload = function () {
         $("#codeInput").val(data);
         mdParser();
     });
+    window.api.receive("current-theme", (data) => {
+        if (data == "dark") {
+            $("#darkMode").hide();
+            $("#themeCSS").attr("href", "dark.css");
+        }
+        else {
+            $("#lightMode").hide();
+            $("#themeCSS").attr("href", "light.css");
+        }
+    });
+    window.api.send("get-theme", "");
+    window.api.receive("current-speechSpeed", (data) => {
+        $("#speechSpeed").val(data)
+        $("#speechSpeedDisplay").text(data)
+    });
+    window.api.send("get-speechSpeed", "");
     window.api.receive("text-dictate", (data) => {
         if (data.text != "" && data.text != "the") {
             // console.log(data);

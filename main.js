@@ -6,6 +6,22 @@ const vosk = require('vosk');
 const mic = require("mic");
 const textToSpeech = require('@google-cloud/text-to-speech');
 const client = new textToSpeech.TextToSpeechClient();
+const Store = require('electron-store');
+
+const schema = {
+	theme: {
+		type: 'string',
+		default: "dark"
+	},
+	speechSpeed: {
+		type: 'number',
+		maximum: 4,
+    minimum: 0.25,
+    default: 1
+	}
+};
+
+const store = new Store({schema});
 
 
 let savePath = "";
@@ -89,6 +105,19 @@ function createWindow() {
     }
   });
 
+  ipcMain.on('set-theme', (event, arg) => {
+    store.set("theme",arg)
+  });
+  ipcMain.on('get-theme', (event, arg) => {
+    mainWindow.webContents.send("current-theme", store.get("theme","dark"));
+  });
+  ipcMain.on('set-speechSpeed', (event, arg) => {
+    store.set("speechSpeed",arg)
+  });
+  ipcMain.on('get-speechSpeed', (event, arg) => {
+    mainWindow.webContents.send("current-speechSpeed", store.get("speechSpeed",1));
+  });
+
   ipcMain.on('start-speak', async (event, arg) => {
     // The text to synthesize
     // const text = 'hello, world!';
@@ -99,7 +128,7 @@ function createWindow() {
       // Select the language and SSML voice gender (optional)
       voice: { languageCode: 'en-GB', ssmlGender: 'MALE', name: "en-GB-Wavenet-B" },
       // select the type of audio encoding
-      audioConfig: { audioEncoding: 'MP3', speakingRate: "0.7" },
+      audioConfig: { audioEncoding: 'MP3', speakingRate: store.get("speechSpeed") },
     };
 
     // Performs the text-to-speech request
