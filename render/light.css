@@ -1,0 +1,157 @@
+:root {
+    /*dark tones*/
+    --nord0: #2E3440;
+    --nord1: #3B4252;
+    --nord2: #434C5E;
+    --nord3: #4C566A;
+    /*light tones*/
+    --nord4: #D8DEE9;
+    --nord5: #E5E9F0;
+    --nord6: #ECEFF4;
+    /*blue tones*/
+    --nord7: #8FBCBB;
+    /*highlight*/
+    --nord8: #88C0D0;
+    /*primary*/
+    --nord9: #81A1C1;
+    /*secondary*/
+    --nord10: #5E81AC;
+    /*tertiary*/
+    /*special tones*/
+    --nord11: #BF616A;
+    /*error*/
+    --nord12: #D08770;
+    /*danger*/
+    --nord13: #EBCB8B;
+    /*warning*/
+    --nord14: #A3BE8C;
+    /*success*/
+    --nord15: #B48EAD;
+    /*uncommon function*/
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+    background: var(--nord5);
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+    background: var(--nord5);
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: var(--nord6);
+}
+
+html {
+    background-color: var(--nord6);
+    color: var(--nord0);
+}
+
+.codeBoxes {
+    border: 2px solid var(--nord4);
+    background-color: var(--nord5);
+    color: var(--nord0);
+}
+
+h1, h2, h3 {
+    color: var(--nord3);
+}
+
+h4, h5, h6 {
+    color: var(--nord2);
+}
+
+a {
+    color: var(--nord8);
+}
+
+a:hover {
+    color: var(--nord9)
+}
+
+mark {
+    background-color: var(--nord7);
+}
+
+blockquote {
+    color: var(--nord1);
+}
+
+table td, table th {
+    border: 1px solid var(--nord10);
+}
+
+table th {
+    background-color: var(--nord9);
+    color: var(--nord5);
+}
+
+form {
+    color: var(--nord2);
+}
+
+input:not[type="checkbox"], select {
+    background-color: var(--nord4);
+    color: var(--nord1);
+}
+
+input[type=submit] {
+    background-color: var(--nord8);
+    color: var(--nord1);
+}
+
+
+code {
+    background-color: var(--nord0);
+    color: var(--nord4);
+}
+pre code {
+    background-color: var(--nord0);
+    color: var(--nord4);
+}
+
+samp {
+    background-color: var(--nord0);
+    color: var(--nord15);
+}
+
+header {
+    background-color: var(--nord4);
+}
+
+
+footer {
+    color: var(--nord3);
+}
+
+section {
+    background-color: var(--nord5);
+}
+
+.modal-wrapper {
+    background-color: var(--nord4);
+}
+
+.modal-block {
+    background-color: #ECEFF4c9;
+}
+
+
+.modal-title {
+    color: var(--nord8);
+}
+
+button{
+    filter:  brightness(20%);
+}
+
+input[type="range"] {
+    background: var(--nord0);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    background: var(--nord8);
+}

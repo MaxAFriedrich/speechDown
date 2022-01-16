@@ -1,6 +1,10 @@
 const playPaused = false;
 window.onload = function () {
     $("#codeInput").focus();
+    $("#darkMode").hide();
+    $("#themeCSS").attr("href", "dark.css");
+    $("#speechSpeedDisplay").text($("#speechSpeed").val())
+
 
     $("#codeInput").on("keyup", function () {
         mdParser();
@@ -23,7 +27,22 @@ window.onload = function () {
         $("#settingsModal").slideDown("medium");
         $(".modal-block").fadeIn("medium");
     });
+    // TODO add settings save
+    $("#darkMode").on("click", () => {
+        $("#themeCSS").attr("href", "dark.css");
+        $("#lightMode").toggle();
+        $("#darkMode").toggle();
 
+    });
+    $("#lightMode").on("click", () => {
+        $("#themeCSS").attr("href", "light.css");
+        $("#lightMode").toggle();
+        $("#darkMode").toggle();
+    });
+
+    $("#speechSpeed").on("change",()=>{
+        $("#speechSpeedDisplay").text($("#speechSpeed").val())
+    })
 
     $("#Dictate").on("click", function () {
         window.api.send("toggle-dictate", "");

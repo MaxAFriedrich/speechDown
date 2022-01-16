@@ -9,6 +9,7 @@
     <script src="gui.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" id="themeCSS" href="light.css">
 </head>
 
 <body>
@@ -47,12 +48,19 @@
     </div>
     <script src="scripts/syncscroll.min.js"></script>
     <audio src="" id="speakingAudio"></audio>
-    
+
     <div class="modal-block"></div>
     <div class="modal-wrapper" id="settingsModal">
         <button class="modal-close" id="modalClose"><img src="svg/close_white_24dp.svg"></button>
-        <h3 class="modal-title">Settings</h3>
-        <p>Here is the contents of the modal.</p>
+        <h2 class="modal-title">Settings</h2>
+        <br>
+        <h3>Theme</h3>
+        <button id="darkMode"><img src="svg/dark_mode_white_24dp.svg"></button>
+        <button id="lightMode"><img src="svg/light_mode_white_24dp.svg"></button>
+        <h3>Reading</h3>
+        <span>Speed</span>
+        <input type="range" min="0.25" max="4" value="1.0" step="0.01" id="speechSpeed">
+        <span id="speechSpeedDisplay"></span>
     </div>
 </body>
 
