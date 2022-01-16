@@ -1,3 +1,4 @@
+const playPaused = false;
 window.onload = function () {
     $("#codeInput").focus();
 
@@ -24,21 +25,7 @@ window.onload = function () {
     });
     $("#OCR").on("click", function () { alert("OCR"); });
     $("#Read").on("click", function () {
-        var textComponent = document.getElementById('codeInput');
-        var selectedText;
-
-        if (textComponent.selectionStart !== undefined) {// Standards Compliant Version
-            var startPos = textComponent.selectionStart;
-            var endPos = textComponent.selectionEnd;
-            selectedText = textComponent.value.substring(startPos, endPos);
-        }
-        else if (document.selection !== undefined) {// IE Version
-            textComponent.focus();
-            var sel = document.selection.createRange();
-            selectedText = sel.text;
-        }
-        window.api.send("start-speak", selectedText);
-
+        readText();
     });
     $("#Code").on("click", function () {
         $("#codeInput").show();
@@ -149,20 +136,7 @@ window.onload = function () {
             $("#dictationOff").toggle();
         }
         if (event.ctrlKey && event.key == "r") {
-            var textComponent = document.getElementById('codeInput');
-            var selectedText;
-
-            if (textComponent.selectionStart !== undefined) {// Standards Compliant Version
-                var startPos = textComponent.selectionStart;
-                var endPos = textComponent.selectionEnd;
-                selectedText = textComponent.value.substring(startPos, endPos);
-            }
-            else if (document.selection !== undefined) {// IE Version
-                textComponent.focus();
-                var sel = document.selection.createRange();
-                selectedText = sel.text;
-            }
-            window.api.send("start-speak", selectedText);
+            readText();
             // $("#speakOn").toggle();
             // $("#speakOff").toggle();
         }
@@ -185,13 +159,46 @@ window.onload = function () {
         audio.src = data;
         audio.controls = true;
         document.body.appendChild(audio);
-        audio.play()
+        audio.play();
+        playPaused=true;
         // $("#speakOn").toggle();
         // $("#speakOff").toggle();
     });
-
+    $("#speakingAudio").on("ended", () => {
+        $("#speakOn").toggle();
+        $("#speakOff").toggle();
+        playPaused=false;
+    });
 };
 
+function readText() {
+    if (playPaused){
+        var audio = document.getElementById("speakingAudio");
+        audio.play();
+        $("#speakOn").toggle();
+        $("#speakOff").toggle();
+    }else if ($("#speakOff").is(":visible")) {
+        var textComponent = document.getElementById('codeInput');
+        var selectedText;
+
+        if (textComponent.selectionStart !== undefined) {// Standards Compliant Version
+            var startPos = textComponent.selectionStart;
+            var endPos = textComponent.selectionEnd;
+            selectedText = textComponent.value.substring(startPos, endPos);
+        }
+        else if (document.selection !== undefined) {// IE Version
+            textComponent.focus();
+            var sel = document.selection.createRange();
+            selectedText = sel.text;
+        }
+        window.api.send("start-speak", selectedText);
+    } else {
+        var audio = document.getElementById("speakingAudio");
+        audio.pause();
+    }
+    $("#speakOn").toggle();
+    $("#speakOff").toggle();
+}
 function mdParser() {
     // console.log($("#codeInput").val());
     let parsedHTML = DOMPurify.sanitize(marked.parse($("#codeInput").val()));

@@ -97,9 +97,9 @@ function createWindow() {
     const request = {
       input: { text: arg },
       // Select the language and SSML voice gender (optional)
-      voice: { languageCode: 'en-GB', ssmlGender: 'MALE', name: "en-GB-Wavenet-B", speakingRate: 0.6 },
+      voice: { languageCode: 'en-GB', ssmlGender: 'MALE', name: "en-GB-Wavenet-B" },
       // select the type of audio encoding
-      audioConfig: { audioEncoding: 'MP3' },
+      audioConfig: { audioEncoding: 'MP3', speakingRate: "0.7" },
     };
 
     // Performs the text-to-speech request
@@ -176,7 +176,7 @@ function createWindow() {
   mainWindow.loadFile('render/index.html');
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools();
+  // mainWindow.webContents.openDevTools();
 }
 
 // This method will be called when Electron has finished
