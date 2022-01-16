@@ -16,7 +16,7 @@ contextBridge.exposeInMainWorld(
   "api", {
   send: (channel, data) => {
     // whitelist channels
-    let validChannels = ["save-file", "open-file", "create-file", "toggle-dictate", "start-speak", "set-theme", "get-theme","get-speechSpeed","set-speechSpeed"];
+    let validChannels = ["save-file", "open-file", "create-file", "toggle-dictate", "start-speak", "set-theme", "get-theme","get-speechSpeed","set-speechSpeed","open-link"];
     if (validChannels.includes(channel)) {
       ipcRenderer.send(channel, data);
     }

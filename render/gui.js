@@ -37,7 +37,7 @@ window.onload = function () {
     });
 
     $("#speechSpeed").on("change", () => {
-        window.api.send("set-speechSpeed",Number($("#speechSpeed").val()))
+        window.api.send("set-speechSpeed", Number($("#speechSpeed").val()));
         $("#speechSpeedDisplay").text($("#speechSpeed").val());
     });
 
@@ -198,8 +198,8 @@ window.onload = function () {
     });
     window.api.send("get-theme", "");
     window.api.receive("current-speechSpeed", (data) => {
-        $("#speechSpeed").val(data)
-        $("#speechSpeedDisplay").text(data)
+        $("#speechSpeed").val(data);
+        $("#speechSpeedDisplay").text(data);
     });
     window.api.send("get-speechSpeed", "");
     window.api.receive("text-dictate", (data) => {
@@ -260,6 +260,11 @@ function mdParser() {
     let parsedHTML = DOMPurify.sanitize(marked.parse($("#codeInput").val()));
     $("#outputText").html(parsedHTML);
     $("input[type='checkbox']").parents("ul").css({ "list-style-type": "none" });
+    $("#outputText a").on("click", function (e) {
+        e.stopPropagation();
+        e.preventDefault();
+        window.api.send("open-link", $(this).attr("href"));
+    });
 }
 
 
