@@ -13,9 +13,11 @@
 
 <body>
     <div id="options" unselectable="on">
-        <div class="left"> <button title="Save the open file." id="Save"><img src="svg/save_white_24dp.svg"></button>
+        <div class="left">
+            <button title="Save the open file." id="Save"><img src="svg/save_white_24dp.svg"></button>
             <button title="Open a new file." id="Open"><img src="svg/file_open_white_24dp.svg"></button>
             <button title="Create a new file." id="New"><img src="svg/note_add_white_24dp.svg"></button>
+            <button id="settingsBtn"><img src="svg/settings_white_24dp.svg"></button>
         </div>
         <div class="center">
             <button title="Dictate text." id="Dictate">
@@ -26,7 +28,7 @@
                 <img src="svg/document_scanner_white_24dp.svg">
             </button>
             <button title="Read out the text." id="Read">
-                
+
                 <img src="svg/volume_up_white_24dp.svg" style="display:block;" id="speakOff">
                 <img src="svg/stop_white_24dp.svg" style="display:none;" id="speakOn">
             </button>
@@ -45,6 +47,13 @@
     </div>
     <script src="scripts/syncscroll.min.js"></script>
     <audio src="" id="speakingAudio"></audio>
+    
+    <div class="modal-block"></div>
+    <div class="modal-wrapper" id="settingsModal">
+        <button class="modal-close" id="modalClose"><img src="svg/close_white_24dp.svg"></button>
+        <h3 class="modal-title">Settings</h3>
+        <p>Here is the contents of the modal.</p>
+    </div>
 </body>
 
 </html>

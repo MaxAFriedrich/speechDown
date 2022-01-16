@@ -18,6 +18,13 @@ window.onload = function () {
         $("#codeInput").val("");
         mdParser();
     });
+
+    $("#settingsBtn").on("click", () => {
+        $("#settingsModal").slideDown("medium");
+        $(".modal-block").fadeIn("medium");
+    });
+
+
     $("#Dictate").on("click", function () {
         window.api.send("toggle-dictate", "");
         $("#dictationOn").toggle();
@@ -40,6 +47,15 @@ window.onload = function () {
     $("#Preview").on("click", function () {
         $("#codeInput").hide();
         $("#outputText").show();
+    });
+
+    $(".modal-close").on("click", () => {
+        $(".modal-wrapper").slideUp("medium");
+        $(".modal-block").fadeOut("medium");
+    });
+    $(".modal-block").on("click", () => {
+        $(".modal-wrapper").slideUp("medium");
+        $(".modal-block").fadeOut("medium");
     });
 
 
@@ -104,6 +120,36 @@ window.onload = function () {
     };
 
     $("body").on("keydown", function (event) {
+        if (event.ctrlKey && event.key == "s") {
+            window.api.send("save-file", $("#codeInput").val());
+        }
+        if (event.ctrlKey && event.key == "o") {
+            // window.api.send("save-file", $("#codeInput").val());
+            window.api.send("open-file", "");
+        }
+        if (event.ctrlKey && event.key == "n") {
+            window.api.send("create-file", "");
+            $("#codeInput").val("");
+            mdParser();
+        }
+        if (event.ctrlKey && event.key == ",") {
+            $("#settingsModal").slideToggle("medium");
+            $(".modal-block").fadeToggle("medium");
+        }
+        if (event.key == "Escape" && $(".modal-wrapper").is(":visible")) {
+            $(".modal-wrapper").slideUp("medium");
+            $(".modal-block").fadeOut("medium");
+        }
+        if (event.ctrlKey && event.key == "d") {
+            window.api.send("toggle-dictate", "");
+            $("#dictationOn").toggle();
+            $("#dictationOff").toggle();
+        }
+        if (event.ctrlKey && event.key == "r") {
+            readText();
+            // $("#speakOn").toggle();
+            // $("#speakOff").toggle();
+        }
         if (event.ctrlKey && event.key == "1") {
             $("#codeInput").show();
             $("#codeInput").focus();
@@ -117,28 +163,6 @@ window.onload = function () {
         if (event.ctrlKey && event.key == "3") {
             $("#codeInput").hide();
             $("#outputText").show();
-        }
-        if (event.ctrlKey && event.key == "s") {
-            window.api.send("save-file", $("#codeInput").val());
-        }
-        if (event.ctrlKey && event.key == "o") {
-            // window.api.send("save-file", $("#codeInput").val());
-            window.api.send("open-file", "");
-        }
-        if (event.ctrlKey && event.key == "n") {
-            window.api.send("create-file", "");
-            $("#codeInput").val("");
-            mdParser();
-        }
-        if (event.ctrlKey && event.key == "d") {
-            window.api.send("toggle-dictate", "");
-            $("#dictationOn").toggle();
-            $("#dictationOff").toggle();
-        }
-        if (event.ctrlKey && event.key == "r") {
-            readText();
-            // $("#speakOn").toggle();
-            // $("#speakOff").toggle();
         }
     });
 
@@ -160,24 +184,24 @@ window.onload = function () {
         audio.controls = true;
         document.body.appendChild(audio);
         audio.play();
-        playPaused=true;
+        playPaused = true;
         // $("#speakOn").toggle();
         // $("#speakOff").toggle();
     });
     $("#speakingAudio").on("ended", () => {
         $("#speakOn").toggle();
         $("#speakOff").toggle();
-        playPaused=false;
+        playPaused = false;
     });
 };
 
 function readText() {
-    if (playPaused){
+    if (playPaused) {
         var audio = document.getElementById("speakingAudio");
         audio.play();
         $("#speakOn").toggle();
         $("#speakOff").toggle();
-    }else if ($("#speakOff").is(":visible")) {
+    } else if ($("#speakOff").is(":visible")) {
         var textComponent = document.getElementById('codeInput');
         var selectedText;
 

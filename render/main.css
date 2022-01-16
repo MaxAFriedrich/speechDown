@@ -76,7 +76,7 @@ body {
     display: flex;
 }
 
-#speakingAudio{
+#speakingAudio {
     display: none;
 }
 
@@ -199,6 +199,7 @@ button {
     padding: 0;
     margin: 0;
     border: none;
+    outline: none;
     cursor: pointer;
 
 }
@@ -207,6 +208,8 @@ button img {
     height: 2.5vh;
     padding: 0;
     margin: 0.5vh;
+    border: none;
+    outline: none;
 }
 
 #options {
@@ -282,6 +285,56 @@ footer {
 section {
     background-color: var(--nord1);
     padding: 1rem;
+}
+
+.modal-wrapper {
+    background-color: var(--nord1);
+    position: absolute;
+    width: 70vw;
+    height: 70vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 2rem;
+    border-radius: 0.5rem;
+    z-index: 2;
+    display: none;
+    -webkit-appearance: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -o-user-select: none;
+    top: 50%;
+    left: 50%;
+    margin-right: -50%;
+    transform: translate(-50%, -50%)
+}
+
+.modal-block {
+    background-color: #2e3440c9;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    display: none;
+}
+
+.modal-close {
+    position: absolute;
+    top: 0;
+    right: 0;
+}
+
+.modal-title {
+    position: absolute;
+    top: 0;
+    margin: 0.5rem;
+    left: 0;
+    color: var(--nord8);
 }
 
 
