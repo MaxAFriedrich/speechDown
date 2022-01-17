@@ -7,7 +7,7 @@ const mic = require("mic");
 const textToSpeech = require('@google-cloud/text-to-speech');
 const Store = require('electron-store');
 const openExternal = require('open-external');
-
+const Tesseract = require('tesseract.js');
 
 const schema = {
   theme: {
@@ -120,6 +120,7 @@ function createWindow() {
     // console.log(store.get("googleAuthLocation"));
   });
 
+
   ipcMain.on('set-theme', (event, arg) => {
     store.set("theme", arg);
   });
@@ -141,9 +142,10 @@ function createWindow() {
     if (store.get("googleAuthLocation") == undefined)
       dialog.showErrorBox("Google Speech Error", "Make sure that you have set up your credentials in the settings.");
     try {
-      let authFile = store.get("googleAuthLocation");
-      let projID = JSON.parse(fs.readFileSync(authFile)).project_id;
-      let client = new textToSpeech.TextToSpeechClient({ projID, authFile });
+      process.env["GOOGLE_APPLICATION_CREDENTIALS"] = store.get("googleAuthLocation");
+
+      // let projectId = JSON.parse(fs.readFileSync(authFile)).project_id;
+      let client = new textToSpeech.TextToSpeechClient();
       // console.log(store.get("googleAuthLocation"), authFile, projID);
 
       // The text to synthesize
@@ -182,6 +184,37 @@ function createWindow() {
       startMic();
     }
     dictationStatus = !dictationStatus;
+  });
+  ipcMain.on("start-ocr", (event, arg) => {
+    let loc = dialog.showOpenDialogSync(null, {
+      filters: [
+        { name: 'Image', extensions: ['png', 'jpg', 'jpeg', 'bpm', 'pbm'] },
+        { name: 'All Files', extensions: ['*'] }
+      ],
+      properties: ["multiSelections"]
+    });
+    if (loc != undefined) {
+      let i = 0;
+      let output = "";
+      function OCR() {
+        Tesseract.recognize(
+          loc[i],
+          'eng',
+          { logger: m => { } }
+        ).then(({ data: { text } }) => {
+          output += "\n" + text;
+          console.log(output);
+          i++;
+          if (i < loc.length) {
+            OCR();
+          } else {
+            savePath = "";
+            mainWindow.webContents.send("new-file", output);
+          }
+        });
+      }
+      OCR();
+    }
   });
 
 

@@ -25,6 +25,7 @@
     "electron-store": "^8.0.1",
     "mic": "^2.1.2",
     "open-external": "^0.1.1",
+    "tesseract.js": "^2.1.5",
     "vosk": "^0.3.32"
   }
 }

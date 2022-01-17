@@ -49,7 +49,7 @@ window.onload = function () {
         $("#dictationOn").toggle();
         $("#dictationOff").toggle();
     });
-    $("#OCR").on("click", function () { alert("OCR"); });
+    $("#OCR").on("click", function () { window.api.send("start-ocr","") });
     $("#Read").on("click", function () {
         readText();
     });
