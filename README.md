@@ -7,7 +7,14 @@ This is a speech to text and text to speech app. It is designed to have a minima
 - Optical character recognition using Tesseract.
 -  Mark down preview using Marked.
 
-**Insert IMG here**
+
+<div>
+<img style="width:40%; margin-bottom:1rem;" src="https://github.com/MaxAFriedrich/speechDown/raw/master/screenshots/dark_theme_both_pannels.jpg" referrerpolicy="no-referrer" alt="Screenshot">
+<img style="width:40%; margin-bottom:1rem;" src="https://github.com/MaxAFriedrich/speechDown/raw/master/screenshots/dark_theme_code_pannel.jpg" referrerpolicy="no-referrer" alt="Screenshot">
+<img style="width:40%; margin-bottom:1rem;" src="https://github.com/MaxAFriedrich/speechDown/raw/master/screenshots/dark_theme_preview_pannel.jpg" referrerpolicy="no-referrer" alt="Screenshot">
+<img style="width:40%; margin-bottom:1rem;" src="https://github.com/MaxAFriedrich/speechDown/raw/master/screenshots/dark_theme_settings.jpg" referrerpolicy="no-referrer" alt="Screenshot">
+<img style="width:40%; margin-bottom:1rem;" src="https://github.com/MaxAFriedrich/speechDown/raw/master/screenshots/light_theme_both_pannels.jpg" referrerpolicy="no-referrer" alt="Screenshot">
+</div>
 
 ## Compatibility
 
