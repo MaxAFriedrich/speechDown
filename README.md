@@ -1,45 +1,63 @@
-# electron-quick-start
+# speechDown
 
-**Clone and run for a quick way to see Electron in action.**
+This is a speech to text and text to speech app. It is designed to have a minimal interface and to be as simple as possible to use. It has the following features:
 
-This is a minimal Electron application based on the [Quick Start Guide](https://electronjs.org/docs/latest/tutorial/quick-start) within the Electron documentation.
+- Speech to text dictation functionality using vosk.
+- Text to speech functionality using Google text to speech.
+- Optical character recognition using Tesseract.
+-  Mark down preview using Marked.
 
-**Use this app along with the [Electron API Demos](https://electronjs.org/#get-started) app for API code examples to help you get started.**
+**Insert IMG here**
 
-A basic Electron application needs just these files:
+## Compatibility
 
-- `package.json` - Points to the app's main file and lists its details and dependencies.
-- `main.js` - Starts the app and creates a browser window to render HTML. This is the app's **main process**.
-- `index.html` - A web page to render. This is the app's **renderer process**.
+This app is only available on MacOS Linux and Windows.  With x86-64 CPU and as much RAM and as much CPU performance as possible.
 
-You can learn more about each of these components within the [Quick Start Guide](https://electronjs.org/docs/latest/tutorial/quick-start).
+## Installation
 
-## To Use
+*Currently there are no pre-Built packages, however this will change in the future.*
 
-To clone and run this repository you'll need [Git](https://git-scm.com) and [Node.js](https://nodejs.org/en/download/) (which comes with [npm](http://npmjs.com)) installed on your computer. From your command line:
+In order to install this up you can clone this repository and make sure that nodeJS is installed.
 
-```bash
-# Clone this repository
-git clone https://github.com/electron/electron-quick-start
-# Go into the repository
-cd electron-quick-start
-# Install dependencies
+You can do this using the following commands:
+``` bash
+git clone https://github.com/MaxAFriedrich/speechDown
 npm install
-# Run the app
 npm start
 ```
 
-Note: If you're using Linux Bash for Windows, [see this guide](https://www.howtogeek.com/261575/how-to-run-graphical-linux-desktop-applications-from-windows-10s-bash-shell/) or use `node` from the command prompt.
+In order to then use this app you can simply run `npm start` in the root of the repository. You may wish to create a shortcut for this.
 
-## Resources for Learning Electron
 
-- [electronjs.org/docs](https://electronjs.org/docs) - all of Electron's documentation
-- [electronjs.org/community#boilerplates](https://electronjs.org/community#boilerplates) - sample starter apps created by the community
-- [electron/electron-quick-start](https://github.com/electron/electron-quick-start) - a very basic starter Electron app
-- [electron/simple-samples](https://github.com/electron/simple-samples) - small applications with ideas for taking them further
-- [electron/electron-api-demos](https://github.com/electron/electron-api-demos) - an Electron app that teaches you how to use Electron
-- [hokein/electron-sample-apps](https://github.com/hokein/electron-sample-apps) - small demo apps for the various Electron APIs
+### Setting up Google text to speech
 
-## License
+To use Google text to speech you need to set it up using the Google cloud platform. Here are some instructions on how to do this, which you also find in the app itself.
 
-[CC0 1.0 (Public Domain)](LICENSE.md)
+
+> To use this app's text to speech capability, you need to set up authentication so this app can use Google Text-to-Speech. You can find instructions on how to do this [here](cloud.google.com/text-to-speech/docs/before-you-begin#setting_up_your_google_cloud_platform_project).
+> **NOTE: Do not "Set your authentication environment variable".**
+> Once you have completed this, tell this app where you have stored the JSON file you downloaded is.
+
+## Usage
+
+Here are some general point is on the best way to use this software.
+
+-  You can only read scan or edit text in the code panel.
+-  The preview panel can only preview text and has no editing capabilities whatsoever.  
+
+### Controls
+
+Once you have opened the app all of the controls are along the top of the screen.
+
+| Control                                                      | Shortcut            | Function                                         |
+| ------------------------------------------------------------ | ------------------- | ------------------------------------------------ |
+| Save ![Save](https://raw.githubusercontent.com/MaxAFriedrich/speechDown/master/render/svg/save_white_24dp.svg) | <kbd>Ctrl + S</kbd> | Save the current file.                           |
+| Open![Open](https://raw.githubusercontent.com/MaxAFriedrich/speechDown/master/render/svg/file_open_white_24dp.svg) | <kbd>Ctrl + O</kbd> | Open a new file.                                 |
+| New File ![New File](https://raw.githubusercontent.com/MaxAFriedrich/speechDown/master/render/svg/note_add_white_24dp.svg) | <kbd>Ctrl + N</kbd> | Create a new file.                               |
+| Settings![Settings](https://raw.githubusercontent.com/MaxAFriedrich/speechDown/master/render/svg/settings_white_24dp.svg) | <kbd>Ctrl + ,</kbd> | Open the settings.                               |
+| Dictate![Dictate](https://raw.githubusercontent.com/MaxAFriedrich/speechDown/master/render/svg/keyboard_voice_white_24dp.svg) | <kbd>Ctrl + D</kbd> | Dictate some text.                               |
+| Scan![Scan](https://raw.githubusercontent.com/MaxAFriedrich/speechDown/master/render/svg/document_scanner_white_24dp.svg) | <kbd>Ctrl + E</kbd> | Scan a image to text.                            |
+| Read![Read](https://raw.githubusercontent.com/MaxAFriedrich/speechDown/master/render/svg/volume_up_white_24dp.svg) | <kbd>Ctrl + R</kbd> | Read some text out.                              |
+| Code View![Code View](https://raw.githubusercontent.com/MaxAFriedrich/speechDown/master/render/svg/code_white_24dp.svg) | <kbd>Ctrl + 1</kbd> | View just the markdown code.                     |
+| View code and preview![Code and preview](https://raw.githubusercontent.com/MaxAFriedrich/speechDown/master/render/svg/view_agenda_white_24dp.svg) | <kbd>Ctrl + 2</kbd> | View both the markdown and code.                 |
+| Preview only![preview only](https://raw.githubusercontent.com/MaxAFriedrich/speechDown/master/render/svg/preview_white_24dp.svg) | <kbd>Ctrl + 3</kbd> | View just a html render preview of the markdown. |

@@ -408,7 +408,7 @@ function insertText(text) {
         ["\\", [" back slash "]],
         ["<", ["less than symbol", "less than sign"]],
         ["<", ["greater than symbol", "greater than sign"]],
-        [",", [" half stop", " comma"]],
+        [", ", [" half stop ", " comma "]],
         ["/", [" slash ", " forward slash "]],
         ["?", [" question mark"]],
     ];
