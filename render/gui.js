@@ -1,4 +1,5 @@
 const playPaused = false;
+let progressBarUse = 0;
 window.onload = function () {
     $("#codeInput").focus();
     $("#codeInput").on("keyup", function () {
@@ -48,17 +49,16 @@ window.onload = function () {
         window.api.send("toggle-dictate", "");
         $("#dictationOn").toggle();
         $("#dictationOff").toggle();
-        $("#progressBar").toggle();
+        progressBar("#dictationOn");
 
     });
     $("#OCR").on("click", function () {
         window.api.send("start-ocr", "");
-        $("#progressBar").toggle();
+        progressBar("#OCR");
     });
     $("#Read").on("click", function () {
-        $("#progressBar").toggle();
         readText();
-
+        progressBar("#speakOn");
     });
     $("#Code").on("click", function () {
         $("#codeInput").show();
@@ -170,15 +170,16 @@ window.onload = function () {
             window.api.send("toggle-dictate", "");
             $("#dictationOn").toggle();
             $("#dictationOff").toggle();
-            $("#progressBar").toggle();
+            progressBar("#dictationOn");
+
         }
         if (event.ctrlKey && event.key == "e") {
             window.api.send("start-ocr", "");
-            $("#progressBar").toggle();
+            progressBar("#OCR");
         }
         if (event.ctrlKey && event.key == "r") {
             readText();
-            $("#progressBar").toggle();
+            progressBar("#speakOn");
 
             // $("#speakOn").toggle();
             // $("#speakOff").toggle();
@@ -262,7 +263,10 @@ window.onload = function () {
         }
         input.scrollTop = scrollPos;
         mdParser();
-        $("#progressBar").toggle();
+        progressBar("script");
+    });
+    window.api.receive("fail-ocr", (data) => {
+        progressBar("script");
     });
     window.api.receive("audio-speak", (data) => {
         var audio = document.getElementById("speakingAudio");
@@ -277,7 +281,7 @@ window.onload = function () {
     $("#speakingAudio").on("ended", () => {
         $("#speakOn").toggle();
         $("#speakOff").toggle();
-        $("#progressBar").toggle();
+        progressBar("#speakOn");
         playPaused = false;
     });
 };
@@ -456,4 +460,16 @@ function insertText(text) {
     // console.log(text);
     // console.log(front);
 
+}
+
+function progressBar(selector) {
+    if ($(selector).is(":visible")) {
+        progressBarUse++;
+        $("#progressBar").show();
+    } else {
+        progressBarUse--;
+        if (progressBarUse == 0) {
+            $("#progressBar").hide();
+        }
+    }
 }

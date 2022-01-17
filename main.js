@@ -214,6 +214,8 @@ function createWindow() {
         });
       }
       OCR();
+    }else{
+      mainWindow.webContents.send("fail-ocr", "");
     }
   });
 

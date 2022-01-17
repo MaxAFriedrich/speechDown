@@ -22,7 +22,7 @@ contextBridge.exposeInMainWorld(
     }
   },
   receive: (channel, func) => {
-    let validChannels = ["new-file", "text-dictate", "audio-speak", "current-theme","current-speechSpeed","result-ocr"];
+    let validChannels = ["new-file", "text-dictate", "audio-speak", "current-theme","current-speechSpeed","result-ocr","fail-ocr"];
     if (validChannels.includes(channel)) {
       // Deliberately strip event as it includes `sender` 
       ipcRenderer.on(channel, (event, ...args) => func(...args));
