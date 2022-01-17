@@ -9,10 +9,15 @@
     <script src="gui.js"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="main.css">
-    <link rel="stylesheet" id="themeCSS" href="light.css">
+    <link rel="stylesheet" id="themeCSS" href="dark.css">
 </head>
 
 <body>
+    <main id="progressBar">
+        <div class="loading-bar-container">
+            <div class="loading-bar">
+            </div>
+    </main>
     <div id="options" unselectable="on">
         <div class="left">
             <button title="Save the open file." id="Save"><img src="svg/save_white_24dp.svg"></button>
@@ -64,7 +69,11 @@
         <br>
         <h4>Authenticate</h4>
         <p>
-            To use this app's text to speech capability, you need to set up authentication so this app can use <a onclick="window.api.send('open-link','cloud.google.com/text-to-speech')">Google Text-to-Speech</a>. You can find instructiosn on how to do this <a onclick="window.api.send('open-link','cloud.google.com/text-to-speech/docs/before-you-begin#setting_up_your_google_cloud_platform_project')">here.</a> <b>NOTE: Do not "Set your authentication environment variable".</b>
+            To use this app's text to speech capability, you need to set up authentication so this app can use <a
+                onclick="window.api.send('open-link','cloud.google.com/text-to-speech')">Google Text-to-Speech</a>. You
+            can find instructiosn on how to do this <a
+                onclick="window.api.send('open-link','cloud.google.com/text-to-speech/docs/before-you-begin#setting_up_your_google_cloud_platform_project')">here.</a>
+            <b>NOTE: Do not "Set your authentication environment variable".</b>
             <br>
             Once you have completed this, tell this app where you have stored the json file you downloaded is.
         </p>

@@ -157,3 +157,11 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
     background: var(--nord8);
 }
+
+.loading-bar-container {
+    background-color: var(--nord4);
+  }
+  
+  .loading-bar {
+    background-color: var(--nord3);
+  }

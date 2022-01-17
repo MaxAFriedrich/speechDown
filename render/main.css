@@ -293,7 +293,39 @@ input[type="range"]::-webkit-slider-thumb {
     cursor: pointer;
 }
 
-
+main {
+    display: none;
+    margin: none;
+    position: relative; 
+    width: 100%; 
+  }
+  
+  .loading-bar-container {
+    height: 0.1rem;
+    width: 100%;
+    background-color: #cfe0f0;
+    position: absolute;
+    overflow: hidden;
+  }
+  
+  .loading-bar {
+    height: 100%;
+    width: 50%;
+    background-color: #0000ff;
+    position: absolute;
+    left: -50%;
+    animation: loading 2s ease-in 0.5s infinite;
+    border-radius: 0.1rem;
+  }
+  
+  @keyframes loading {
+   0% {
+    transform:translateX(0)
+   }
+   to {
+    transform:translateX(400%)
+   }
+  }
 
 @media only screen and (max-width: 800px) {
     header * {

@@ -203,13 +203,13 @@ function createWindow() {
           { logger: m => { } }
         ).then(({ data: { text } }) => {
           output += "\n" + text;
-          console.log(output);
+          // console.log(output)
           i++;
           if (i < loc.length) {
             OCR();
           } else {
             savePath = "";
-            mainWindow.webContents.send("new-file", output);
+            mainWindow.webContents.send("result-ocr", output);
           }
         });
       }
