@@ -1,5 +1,5 @@
 {
-  "name": "speechDown",
+  "name": "speechdown",
   "version": "0.1.0",
   "description": "A markdown app with speech to text and text to speech.",
   "main": "main.js",
