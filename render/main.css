@@ -198,6 +198,7 @@ pre code {
     display: block;
     border-radius: 0.3rem;
     font-family: 'Roboto Mono', monospace;
+    overflow: auto;
 }
 
 samp {

@@ -94,6 +94,11 @@ function createWindow() {
     fs.writeFileSync(savePath, arg);
 
   });
+  ipcMain.on('auto-save', (event, arg) => {
+    if (savePath != "")
+      fs.writeFileSync(savePath, arg);
+
+  });
 
   ipcMain.on('open-file', (event, arg) => {
     // console.log(arg)
@@ -208,13 +213,12 @@ function createWindow() {
           if (i < loc.length) {
             OCR();
           } else {
-            savePath = "";
             mainWindow.webContents.send("result-ocr", output);
           }
         });
       }
       OCR();
-    }else{
+    } else {
       mainWindow.webContents.send("fail-ocr", "");
     }
   });

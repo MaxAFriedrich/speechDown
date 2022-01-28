@@ -318,13 +318,14 @@ function readText() {
 function mdParser() {
     // console.log($("#codeInput").val());
     let parsedHTML = DOMPurify.sanitize(marked.parse($("#codeInput").val()));
-    $("#outputText").html(parsedHTML);
+    $("#outputText").html(parsedHTML.replace(/!\[(.*?)\]\((.*?)\)/gim, "<img alt='$1' src='$2' />"));
     $("input[type='checkbox']").parents("ul").css({ "list-style-type": "none" });
     $("#outputText a").on("click", function (e) {
         e.stopPropagation();
         e.preventDefault();
         window.api.send("open-link", $(this).attr("href"));
     });
+    window.api.send("auto-save",$("#codeInput").val())
 }
 
 
