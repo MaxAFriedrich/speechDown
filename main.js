@@ -2,12 +2,14 @@
 const { app, BrowserWindow, Menu, MenuItem, ipcMain, dialog } = require('electron');
 const path = require('path');
 const fs = require('fs');
-const vosk = require('vosk');
-const mic = require("mic");
 const textToSpeech = require('@google-cloud/text-to-speech');
 const Store = require('electron-store');
 const openExternal = require('open-external');
 const Tesseract = require('tesseract.js');
+const { Writable } = require('stream');
+const recorder = require('node-record-lpcm16');
+const speech = require('@google-cloud/speech').v1p1beta1;
+
 
 const schema = {
   theme: {
@@ -29,9 +31,7 @@ const store = new Store({ schema });
 
 
 let savePath = "";
-let model;
-let rec;
-let micInstance;
+let dictationStatus = false;
 
 function _arrayBufferToBase64(buffer) {
   var binary = '';
@@ -145,11 +145,7 @@ function createWindow() {
   });
 
   ipcMain.on('start-speak', async (event, arg) => {
-    if (store.get("googleAuthLocation") == undefined)
-      dialog.showErrorBox("Google Speech Error", "Make sure that you have set up your credentials in the settings.");
     try {
-      process.env["GOOGLE_APPLICATION_CREDENTIALS"] = store.get("googleAuthLocation");
-
       // let projectId = JSON.parse(fs.readFileSync(authFile)).project_id;
       let client = new textToSpeech.TextToSpeechClient();
       // console.log(store.get("googleAuthLocation"), authFile, projID);
@@ -182,15 +178,25 @@ function createWindow() {
   ipcMain.on("create-file", (event, arg) => {
     savePath = "";
   });
-  let dictationStatus = false;
+
+
+
   ipcMain.on("toggle-dictate", (event, arg) => {
     if (dictationStatus) {
-      stopMic();
+      // stopMic();
+      //todo add google func
+      dictationStatus = !dictationStatus;
+
+      stopStream();
     } else {
-      startMic();
+      //todo add google func
+      dictationStatus = !dictationStatus;
+
+      startStream();
     }
-    dictationStatus = !dictationStatus;
   });
+
+
   ipcMain.on("start-ocr", (event, arg) => {
     let loc = dialog.showOpenDialogSync(null, {
       filters: [
@@ -230,51 +236,187 @@ function createWindow() {
   const menu = new Menu();
   Menu.setApplicationMenu(menu);;
 
+  if (store.get("googleAuthLocation") == undefined)
+    dialog.showErrorBox("Google API Error", "Make sure that you have set up your credentials in the settings.");
+  try {
+    process.env["GOOGLE_APPLICATION_CREDENTIALS"] = store.get("googleAuthLocation");
 
-  MODEL_PATH = "model";
-  SAMPLE_RATE = 16000;
-
-  if (!fs.existsSync(MODEL_PATH)) {
-    dialog.showErrorBox("Vosk Speech To Text Error", "Please download the model from https://alphacephei.com/vosk/models and unpack as " + MODEL_PATH + " in the installation folder.");
-    process.exit();
+  } catch (error) {
+    dialog.showErrorBox("Google Dictation Error", error);
   }
 
-  vosk.setLogLevel(0);
-  model = new vosk.Model(MODEL_PATH);
-  rec = new vosk.Recognizer({ model: model, sampleRate: SAMPLE_RATE });
+  const sampleRateHertz = 16000;
+  const streamingLimit = 290000;
 
-  micInstance = mic({
-    rate: String(SAMPLE_RATE),
-    channels: '1',
-    debug: false,
-  });
 
-  var micInputStream = micInstance.getAudioStream();
+  let recognizeStream = null;
+  let restartCounter = 0;
+  let audioInput = [];
+  let lastAudioInput = [];
+  let resultEndTime = 0;
+  let isFinalEndTime = 0;
+  let finalRequestEndTime = 0;
+  let newStream = true;
+  let bridgingOffset = 0;
+  let lastTranscriptWasFinal = false;
 
-  micInstance.start();
 
-  micInputStream.on('data', data => {
-    if (rec.acceptWaveform(data)) {
-      if (data != "" && data != "the") {
-        let test = rec.result().text;
-        console.log(test);
-        mainWindow.webContents.send("text-dictate", test);
-      }
+  const client = new speech.SpeechClient();
+
+
+
+  function startStream() {
+    if (!dictationStatus) {
+      return;
     }
-    // else
-    // console.log(rec.partialResult());
+    console.log("start");
+    // Clear current audioInput
+    audioInput = [];
+    // Initiate (Reinitiate) a recognize stream
+
+    const config = {
+      encoding: 'LINEAR16',
+      sampleRateHertz: sampleRateHertz,
+      languageCode: 'en-GB',
+      model: 'default',
+      profanityFilter: false,
+      enableAutomaticPunctuation: true,
+      metadata: {
+        microphone_distance: "NEARFIELD"
+      }
+    };
+
+    const request = {
+      config,
+      interimResults: true,
+    };
+
+    recognizeStream = client
+      .streamingRecognize(request)
+      .on('error', err => {
+        if (err.code === 11) {
+          // restartStream();
+        } else {
+          console.error('API request error ' + err);
+        }
+      })
+      .on('data', speechCallback);
+
+    // Restart stream when streamingLimit expires
+    setTimeout(restartStream, streamingLimit);
+  }
+
+  const speechCallback = stream => {
+
+    if (stream.results[0].isFinal) {
+      mainWindow.webContents.send("text-dictate", stream.results[0].alternatives[0].transcript);
+      // console.log(stream.results[0].alternatives[0].transcript);
+      isFinalEndTime = resultEndTime;
+    }
+  };
+
+  const audioInputStreamTransform = new Writable({
+    write(chunk, encoding, next) {
+      if (newStream && lastAudioInput.length !== 0) {
+        // Approximate math to calculate time of chunks
+        const chunkTime = streamingLimit / lastAudioInput.length;
+        if (chunkTime !== 0) {
+          if (bridgingOffset < 0) {
+            bridgingOffset = 0;
+          }
+          if (bridgingOffset > finalRequestEndTime) {
+            bridgingOffset = finalRequestEndTime;
+          }
+          const chunksFromMS = Math.floor(
+            (finalRequestEndTime - bridgingOffset) / chunkTime
+          );
+          bridgingOffset = Math.floor(
+            (lastAudioInput.length - chunksFromMS) * chunkTime
+          );
+
+          for (let i = chunksFromMS; i < lastAudioInput.length; i++) {
+            recognizeStream.write(lastAudioInput[i]);
+          }
+        }
+        newStream = false;
+      }
+
+      audioInput.push(chunk);
+
+      if (recognizeStream) {
+        recognizeStream.write(chunk);
+      }
+
+      next();
+    },
+
+    final() {
+      if (recognizeStream) {
+        recognizeStream.end();
+      }
+    },
   });
-  micInstance.pause();
 
-  function startMic() {
-    micInstance.resume();
+  function restartStream() {
+    if (!dictationStatus) {
+      return;
+    }
+    console.log("restart");
+    if (recognizeStream) {
+      recognizeStream.end();
+      recognizeStream.removeListener('data', speechCallback);
+      recognizeStream = null;
+    }
+    if (resultEndTime > 0) {
+      finalRequestEndTime = isFinalEndTime;
+    }
+    resultEndTime = 0;
+
+    lastAudioInput = [];
+    lastAudioInput = audioInput;
+
+    restartCounter++;
+
+    if (!lastTranscriptWasFinal) {
+      process.stdout.write('\n');
+    }
+    process.stdout.write(
+      `${streamingLimit * restartCounter}: RESTARTING REQUEST\n`
+    );
+
+    newStream = true;
+
+    startStream();
   }
 
-  function stopMic() {
-    micInstance.pause();
+  function stopStream() {
+    console.log("stop");
+    if (recognizeStream) {
+      recognizeStream.end();
+      recognizeStream.removeListener('data', speechCallback);
+      recognizeStream = null;
+    }
+    if (resultEndTime > 0) {
+      finalRequestEndTime = isFinalEndTime;
+    }
+    resultEndTime = 0;
+
+    lastAudioInput = [];
   }
-
-
+  // Start recording and send the microphone input to the Speech API
+  recorder
+    .record({
+      sampleRateHertz: sampleRateHertz,
+      threshold: 0, // Silence threshold
+      silence: 1000,
+      keepSilence: false,
+      recordProgram: 'rec', // Try also "arecord" or "sox"
+    })
+    .stream()
+    .on('error', err => {
+      console.error('Audio recording error ' + err);
+    })
+    .pipe(audioInputStreamTransform);
 
 
   // and load the index.html of the app.
@@ -294,8 +436,6 @@ app.whenReady().then(() => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow();
-    rec.free();
-    model.free();
   });
 });
 
@@ -304,16 +444,4 @@ app.whenReady().then(() => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit();
-  console.log("\nDone");
-  rec.free();
-  model.free();
-  micInstance.stop();
-});
-
-process.on('SIGINT', function () {
-  // console.log(rec.finalResult());
-  console.log("\nDone");
-  rec.free();
-  model.free();
-  micInstance.stop();
 });

@@ -370,75 +370,75 @@ function insertText(text) {
     var front = (input.value).substring(0, pos);
     var back = (input.value).substring(pos, input.value.length);
 
-    const allCharacters = [
-        [" I ", [" i "]],
-        ["i'm", ["I'm"]],
-        [".", [" full stop", " period", "dot"]],
-        ["!", [" exclamation mark"]],
-        ['"', ["speech mark", "quotation mark"]],
-        ["£", ["great british pounds ", "british pounds ", "pounds ", "pound sign ", "pound symbol "]],
-        ["$", ["dollars ", "dollar sign ", "dollar "]],
-        ["%", ["percent ", "percent symbol "]],
-        ["^", ["carrot symbol", "carrot sign"]],
-        ["&", ["ampersand"]],
-        ["*", ["star symbol", "star sign", "asterisk", "italics"]],
-        ["**", ["bold"]],
-        ["(", ["open bracket ", "open brackets ", "start brackets ", "start bracket "]],
-        [")", [" close bracket", " close brackets", " end brackets", " end bracket"]],
-        ["- ", ["dash symbol ", "dash sign "]],
-        ["_", [" underscore ", " underscore symbol ", " underscore sign "]],
-        ["+", ["plus sign", "plus symbol", "add symbol", "add sign"]],
-        ["=", ["equals", "equals symbol", "equals sign"]],
-        ["`", ["grave accent", "grave symbol", "grave sign"]],
-        ["¬", ["logical not symbol", "logical not sign"]],
-        ["{", [" open curly brace", " open curly bracket", " open brace", " start curly brace", " start curly bracket", " start brace"]],
-        ["}", ["close curly brace ", "close curly bracket ", "close brace ", "end curly brace ", "end curly bracket ", "end brace "]],
-        ["[", [" open square bracket", " start square bracket"]],
-        ["]", ["close square bracket ", "end square bracket "]],
-        [":", [" colon"]],
-        [";", [" semi colon"]],
-        ["@", [" at symbol "]],
-        ["'", ["single quote", "apostrophe"]],
-        ["~", ["tilde", "tilde symbol", "tilde sign"]],
-        ["#", ["hashtag", "hash tag", "hash symbol", "hash sign"]],
-        ["##", ["heading two"]],
-        ["###", ["heading three"]],
-        ["####", ["heading four"]],
-        ["#####", ["heading five"]],
-        ["######", ["heading six"]],
-        ["|", ["bar symbol", "bar sign"]],
-        ["\\", [" back slash "]],
-        ["<", ["less than symbol", "less than sign"]],
-        ["<", ["greater than symbol", "greater than sign"]],
-        [", ", [" half stop ", " comma "]],
-        ["/", [" slash ", " forward slash "]],
-        ["?", [" question mark"]],
-    ];
-    text = " " + text + " ";
-    for (let i = 0; i < allCharacters.length; i++) {
-        for (let j = 0; j < allCharacters[i][1].length; j++) {
-            text = text.replace(new RegExp(allCharacters[i][1][j], "g"), allCharacters[i][0]);
-        }
-    }
-    text = text.trim();
-    text = text.replace(/(\!|\-|\.|\?|\*|#)( |)(\S)/g, s => s.toUpperCase());
-    let lastCharacter = front.trim();
-    lastCharacter = front.charAt(lastCharacter.length - 1);
-    const endSentencePunctuation = ["!", "-", ".", "?", "*", " \n"];
-    let lastCharacterBool = false;
-    endSentencePunctuation.forEach((e) => {
-        if (e == lastCharacter)
-            lastCharacterBool = true;
-    });
+    // const allCharacters = [
+    //     [" I ", [" i "]],
+    //     ["i'm", ["I'm"]],
+    //     [".", [" full stop", " period", "dot"]],
+    //     ["!", [" exclamation mark"]],
+    //     ['"', ["speech mark", "quotation mark"]],
+    //     ["£", ["great british pounds ", "british pounds ", "pounds ", "pound sign ", "pound symbol "]],
+    //     ["$", ["dollars ", "dollar sign ", "dollar "]],
+    //     ["%", ["percent ", "percent symbol "]],
+    //     ["^", ["carrot symbol", "carrot sign"]],
+    //     ["&", ["ampersand"]],
+    //     ["*", ["star symbol", "star sign", "asterisk", "italics"]],
+    //     ["**", ["bold"]],
+    //     ["(", ["open bracket ", "open brackets ", "start brackets ", "start bracket "]],
+    //     [")", [" close bracket", " close brackets", " end brackets", " end bracket"]],
+    //     ["- ", ["dash symbol ", "dash sign "]],
+    //     ["_", [" underscore ", " underscore symbol ", " underscore sign "]],
+    //     ["+", ["plus sign", "plus symbol", "add symbol", "add sign"]],
+    //     ["=", ["equals", "equals symbol", "equals sign"]],
+    //     ["`", ["grave accent", "grave symbol", "grave sign"]],
+    //     ["¬", ["logical not symbol", "logical not sign"]],
+    //     ["{", [" open curly brace", " open curly bracket", " open brace", " start curly brace", " start curly bracket", " start brace"]],
+    //     ["}", ["close curly brace ", "close curly bracket ", "close brace ", "end curly brace ", "end curly bracket ", "end brace "]],
+    //     ["[", [" open square bracket", " start square bracket"]],
+    //     ["]", ["close square bracket ", "end square bracket "]],
+    //     [":", [" colon"]],
+    //     [";", [" semi colon"]],
+    //     ["@", [" at symbol "]],
+    //     ["'", ["single quote", "apostrophe"]],
+    //     ["~", ["tilde", "tilde symbol", "tilde sign"]],
+    //     ["#", ["hashtag", "hash tag", "hash symbol", "hash sign"]],
+    //     ["##", ["heading two"]],
+    //     ["###", ["heading three"]],
+    //     ["####", ["heading four"]],
+    //     ["#####", ["heading five"]],
+    //     ["######", ["heading six"]],
+    //     ["|", ["bar symbol", "bar sign"]],
+    //     ["\\", [" back slash "]],
+    //     ["<", ["less than symbol", "less than sign"]],
+    //     ["<", ["greater than symbol", "greater than sign"]],
+    //     [", ", [" half stop ", " comma "]],
+    //     ["/", [" slash ", " forward slash "]],
+    //     ["?", [" question mark"]],
+    // ];
+    // text = " " + text + " ";
+    // for (let i = 0; i < allCharacters.length; i++) {
+    //     for (let j = 0; j < allCharacters[i][1].length; j++) {
+    //         text = text.replace(new RegExp(allCharacters[i][1][j], "g"), allCharacters[i][0]);
+    //     }
+    // }
+    // text = text.trim();
+    // text = text.replace(/(\!|\-|\.|\?|\*|#)( |)(\S)/g, s => s.toUpperCase());
+    // let lastCharacter = front.trim();
+    // lastCharacter = front.charAt(lastCharacter.length - 1);
+    // const endSentencePunctuation = ["!", "-", ".", "?", "*", " \n"];
+    // let lastCharacterBool = false;
+    // endSentencePunctuation.forEach((e) => {
+    //     if (e == lastCharacter)
+    //         lastCharacterBool = true;
+    // });
 
-    if (isLetter(front.charAt(front.length - 1))) {
-        text = " " + text;
-    } else if (front == "" || lastCharacterBool) {
-        text = capitalizeFirstLetter(text);
-    }
-    if (lastCharacterBool) {
-        text = " " + text;
-    }
+    // if (isLetter(front.charAt(front.length - 1))) {
+    //     text = " " + text;
+    // } else if (front == "" || lastCharacterBool) {
+    //     text = capitalizeFirstLetter(text);
+    // }
+    // if (lastCharacterBool) {
+    //     text = " " + text;
+    // }
 
 
     input.value = front + text + back;
