@@ -31,6 +31,7 @@ const store = new Store({ schema });
 let savePath = "";
 let model;
 let rec;
+let micInstance;
 
 function _arrayBufferToBase64(buffer) {
   var binary = '';
@@ -242,7 +243,7 @@ function createWindow() {
   model = new vosk.Model(MODEL_PATH);
   rec = new vosk.Recognizer({ model: model, sampleRate: SAMPLE_RATE });
 
-  var micInstance = mic({
+  micInstance = mic({
     rate: String(SAMPLE_RATE),
     channels: '1',
     debug: false,
@@ -253,13 +254,15 @@ function createWindow() {
   micInstance.start();
 
   micInputStream.on('data', data => {
-    if (rec.acceptWaveform(data))
-      // if (rec.result().text != "" || rec.result().text != "the")
-      // console.log(rec.result().text);
-      mainWindow.webContents.send("text-dictate", rec.result());
-
+    if (rec.acceptWaveform(data)) {
+      if (data != "" && data != "the") {
+        let test = rec.result().text;
+        console.log(test);
+        mainWindow.webContents.send("text-dictate", test);
+      }
+    }
     // else
-    //   console.log(rec.partialResult());
+    // console.log(rec.partialResult());
   });
   micInstance.pause();
 
@@ -301,11 +304,16 @@ app.whenReady().then(() => {
 // explicitly with Cmd + Q.
 app.on('window-all-closed', function () {
   if (process.platform !== 'darwin') app.quit();
+  console.log("\nDone");
+  rec.free();
+  model.free();
+  micInstance.stop();
 });
 
 process.on('SIGINT', function () {
   // console.log(rec.finalResult());
-  // console.log("\nDone");
+  console.log("\nDone");
   rec.free();
   model.free();
+  micInstance.stop();
 });

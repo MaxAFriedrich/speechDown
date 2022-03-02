@@ -1,4 +1,4 @@
-const playPaused = false;
+let playPaused = false;
 let progressBarUse = 0;
 window.onload = function () {
     $("#codeInput").focus();
@@ -221,10 +221,11 @@ window.onload = function () {
     });
     window.api.send("get-speechSpeed", "");
     window.api.receive("text-dictate", (data) => {
-        if (data.text != "" && data.text != "the") {
-            // console.log(data);
+        console.log(data);
+        if (data != "" && data != "the") {
+            console.log(data);
             $("#codeInput").focus();
-            insertText(data.text);
+            insertText(data);
             mdParser();
         }
     });
@@ -293,7 +294,7 @@ function readText() {
         $("#speakOn").toggle();
         $("#speakOff").toggle();
         return;
-    } else if ($("#speakOff").is(":visible")) {
+    } else  if ($("#speakOff").is(":visible")) {
         var textComponent = document.getElementById('codeInput');
         var selectedText;
 
